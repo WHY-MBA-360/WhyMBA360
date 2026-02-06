@@ -1,3 +1,4 @@
-export { AdmissionProbabilityService } from "./src/admission-probability.service";
-export { AdmissionProbabilityInput } from "./src/dto/admission-probability.input";
-export { AdmissionProbabilityOutput } from "./src/dto/admission-probability.output";
+export * from "./src/admission-probability.service";
+export * from "./src/admission-probability.module";
+export * from "./src/dto/admission-probability.input";
+export * from "./src/dto/admission-probability.output";

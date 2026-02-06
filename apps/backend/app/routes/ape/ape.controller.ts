@@ -1,18 +1,18 @@
 import { Body, Controller, Post } from "@nestjs/common";
-import { ApeAdapter } from "./ape.adapter";
 import {
+  AdmissionProbabilityService,
   AdmissionProbabilityInput,
   AdmissionProbabilityOutput,
-} from "../../../../engines/ape/src";
+} from "../../../../engines/ape";
 
 @Controller("api/ape/v1")
 export class ApeController {
-  constructor(private readonly ape: ApeAdapter) {}
+  constructor(private readonly apeService: AdmissionProbabilityService) {}
 
   @Post("admission-probability")
   calculate(
     @Body() input: AdmissionProbabilityInput
   ): AdmissionProbabilityOutput {
-    return this.ape.calculate(input);
+    return this.apeService.calculate(input);
   }
 }
