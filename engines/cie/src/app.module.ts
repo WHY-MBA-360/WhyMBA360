@@ -1,9 +1,11 @@
-import { Module } from '@nestjs/common';
-import { OperatorModule } from './operator/operator.module';
+import { Module } from "@nestjs/common";
+import { OperatorModule } from "./operator/operator.module";
+import { ScoreNormalizerModule } from "./exam-engines";
 
 @Module({
   imports: [
-    OperatorModule
+    OperatorModule,
+    ScoreNormalizerModule,
   ],
 })
 export class AppModule {}
