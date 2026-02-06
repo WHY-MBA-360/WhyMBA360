@@ -1,0 +1,31 @@
+name: Architecture Guard
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  architecture-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Enforce architecture boundaries
+        run: |
+          echo "Running architecture checks..."
+
+          # Fail if any engine imports another engine
+          if grep -R "from .*engines/" engines | grep -v "__tests__"; then
+            echo "? Cross-engine import detected"
+            exit 1
+          fi
+
+          # Fail if apps import engine internals
+          if grep -R "engines/.*/src" apps; then
+            echo "? App importing engine internals detected"
+            exit 1
+          fi
+
+          echo "? Architecture checks passed"
