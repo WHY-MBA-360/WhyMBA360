@@ -1,22 +1,22 @@
 export type ExamType = "CAT" | "NMAT" | "XAT";
-export type CollegeCode = "IIM_A" | "IIM_B" | "IIM_C";
 export type Category = "GEN" | "OBC" | "SC" | "ST";
-export type AcademicStream = "ENGG" | "NON_ENGG";
+export type Stream = "ENGG" | "NON_ENGG";
 export type DegreeTier = "IIT" | "NIT" | "PRIVATE";
+export type InstituteCode = "IIM_A" | "IIM_B" | "IIM_C";
 
 export interface AcademicProfile {
-  class10: number;      // 0–100
-  class12: number;      // 0–100
-  graduation: number;   // 0–100
-  stream: AcademicStream;
+  class10: number;
+  class12: number;
+  graduation: number;
+  stream: Stream;
   degreeTier: DegreeTier;
 }
 
 export interface AdmissionProbabilityInput {
   exam: ExamType;
-  rawScore: number;
-  college: CollegeCode;
+  score: number;
   category: Category;
+  institute: InstituteCode;
   academics: AcademicProfile;
   workExMonths: number;
 }
