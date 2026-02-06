@@ -5,6 +5,10 @@ import {
 } from "./dto/v1";
 import { AdmissionProbabilityVectorV1 } from "./vector";
 import { INSTITUTE_CURVES } from "./curves";
+import {
+  CATEGORY_CUTOFF_SHIFT,
+  CATEGORY_STEEPNESS_FACTOR,
+} from "./curves/category";
 
 export class AdmissionProbabilityService {
 
@@ -36,21 +40,24 @@ export class AdmissionProbabilityService {
   }
 
   /**
-   * ?? Core non-linear probability engine
+   * ?? Category-aware non-linear probability
    */
   private computeProbability(input: AdmissionProbabilityInputV1): number {
-    const curve = INSTITUTE_CURVES[input.institute];
+    const baseCurve = INSTITUTE_CURVES[input.institute];
+
+    const cutoff =
+      baseCurve.cutoff + CATEGORY_CUTOFF_SHIFT[input.category];
+
+    const steepness =
+      baseCurve.steepness * CATEGORY_STEEPNESS_FACTOR[input.category];
 
     let score = input.normalizedScore;
 
-    // Category relaxation
-    if (input.category !== "GEN") score += 4;
-
-    // Work-ex (cap at 36 months)
+    // Work-ex contribution (cap)
     score += Math.min(input.workExMonths, 36) * 0.15;
 
-    const x = score - curve.cutoff;
-    const probability = 100 / (1 + Math.exp(-curve.steepness * x));
+    const x = score - cutoff;
+    const probability = 100 / (1 + Math.exp(-steepness * x));
 
     return Math.round(Math.max(0, Math.min(100, probability)));
   }
