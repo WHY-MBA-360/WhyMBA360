@@ -1,136 +1,57 @@
-import { Injectable } from "@nestjs/common";
-import { AdmissionProbabilityInputV1 } from "./dto/admission-probability.input";
-import { AdmissionProbabilityOutputV1 } from "./dto/admission-probability.output";
+import {
+  AdmissionProbabilityInputV1,
+  AdmissionProbabilityOutputV1,
+  Institute,
+} from "./dto/v1";
+import { AdmissionProbabilityVectorV1 } from "./vector";
 
-type Category = "GEN" | "OBC" | "SC" | "ST";
-type Institute = "IIM_A" | "IIM_B" | "IIM_C";
-
-@Injectable()
 export class AdmissionProbabilityService {
   calculate(input: AdmissionProbabilityInputV1): AdmissionProbabilityOutputV1 {
-    const {
-      institute,
-      category,
-      normalizedScore,
-      academics,
-      workExMonths,
-    } = input;
-
-    const cutoff = this.getCutoff(institute, category);
-    if (normalizedScore < cutoff) {
-      return this.zero(institute, "Score below cutoff");
-    }
-
-    const scoreStrength = this.scoreStrength(normalizedScore, cutoff);
-    const academicStrength = this.academicStrength(academics);
-    const workExStrength = this.workExStrength(institute, workExMonths);
-
-    const weights = this.getWeights(institute);
-    const composite =
-      weights.score * scoreStrength +
-      weights.academics * academicStrength +
-      weights.workEx * workExStrength;
-
-    const probability = Math.min(
-      95,
-      Math.max(1, Math.round(100 * composite * this.selectivity(institute)))
-    );
+    const base = this.baseScore(input);
 
     return {
-      institute,
-      probability,
+      institute: input.institute,
+      probability: base,
       breakdown: {
-        score: scoreStrength,
-        academics: academicStrength,
-        workEx: workExStrength,
+        score: base * 0.6,
+        academics: base * 0.25,
+        workEx: base * 0.15,
       },
     };
   }
 
-  // ---------- CORE LOGIC ----------
+  /**
+   * ?? NEW — Multi-Institute Vector
+   */
+  calculateVector(
+    input: AdmissionProbabilityInputV1
+  ): AdmissionProbabilityVectorV1 {
+    const institutes: Institute[] = ["IIM_A", "IIM_B", "IIM_C"];
 
-  private scoreStrength(score: number, cutoff: number): number {
-    const margin = score - cutoff;
-    const logistic = 1 / (1 + Math.exp(-0.25 * margin));
-    return this.clamp(logistic, 0.2, 0.95);
+    const probabilities = institutes.reduce((acc, institute) => {
+      acc[institute] = this.baseScore({ ...input, institute });
+      return acc;
+    }, {} as Record<Institute, number>);
+
+    return { probabilities };
   }
 
-  private academicStrength(a: AdmissionProbabilityInputV1["academics"]): number {
-    const raw =
-      0.3 * a.class10 +
-      0.3 * a.class12 +
-      0.4 * a.grad;
+  /**
+   * Deterministic base probability
+   */
+  private baseScore(input: AdmissionProbabilityInputV1): number {
+    let score = input.normalizedScore;
 
-    const trendAdj =
-      a.trend === "IMPROVING" ? 3 :
-      a.trend === "DECLINING" ? -4 : 0;
+    // Institute strictness
+    if (input.institute === "IIM_A") score -= 5;
+    if (input.institute === "IIM_C") score += 3;
 
-    const streamMultiplier = a.stream === "NON_ENG" ? 1.05 : 0.95;
-    const tierMultiplier = {
-      IIT: 1.1,
-      NIT: 1.07,
-      TIER1: 1.03,
-      TIER2: 1.0,
-      TIER3: 0.95,
-    }[a.degreeTier];
+    // Category relaxation
+    if (input.category !== "GEN") score += 4;
 
-    const index =
-      (raw + trendAdj) * streamMultiplier * tierMultiplier;
+    // Work-ex bonus (cap 36 months)
+    score += Math.min(input.workExMonths, 36) * 0.15;
 
-    return this.clamp(index / 100, 0.3, 0.95);
-  }
-
-  private workExStrength(institute: Institute, months: number): number {
-    const ideal = {
-      IIM_A: 30,
-      IIM_B: 36,
-      IIM_C: 24,
-    }[institute];
-
-    const variance = 144;
-    const strength = Math.exp(-Math.pow(months - ideal, 2) / (2 * variance));
-    return this.clamp(strength, 0.4, 1.0);
-  }
-
-  // ---------- CONFIG ----------
-
-  private getCutoff(inst: Institute, cat: Category): number {
-    const table = {
-      IIM_A: { GEN: 99, OBC: 97, SC: 92, ST: 92 },
-      IIM_B: { GEN: 98, OBC: 96, SC: 90, ST: 90 },
-      IIM_C: { GEN: 97, OBC: 95, SC: 90, ST: 90 },
-    };
-    return table[inst][cat];
-  }
-
-  private getWeights(inst: Institute) {
-    return {
-      IIM_A: { score: 0.55, academics: 0.3, workEx: 0.15 },
-      IIM_B: { score: 0.45, academics: 0.3, workEx: 0.25 },
-      IIM_C: { score: 0.5, academics: 0.25, workEx: 0.25 },
-    }[inst];
-  }
-
-  private selectivity(inst: Institute): number {
-    return {
-      IIM_A: 0.75,
-      IIM_B: 0.85,
-      IIM_C: 0.9,
-    }[inst];
-  }
-
-  // ---------- HELPERS ----------
-
-  private clamp(v: number, min: number, max: number): number {
-    return Math.max(min, Math.min(max, v));
-  }
-
-  private zero(inst: Institute, reason: string): AdmissionProbabilityOutputV1 {
-    return {
-      institute: inst,
-      probability: 0,
-      breakdown: { score: 0, academics: 0, workEx: 0 },
-      reasons: [reason],
-    };
+    return Math.max(0, Math.min(100, Math.round(score)));
   }
 }
