@@ -1,2 +1,2 @@
-export * from "./delta-attribution.types";
-export * from "./delta-attribution.calc";
+export * from "./explainability.types";
+export * from "./explain-probability";
