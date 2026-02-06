@@ -9,6 +9,7 @@ import {
   CATEGORY_CUTOFF_SHIFT,
   CATEGORY_STEEPNESS_FACTOR,
 } from "./curves/category";
+import { INSTITUTE_TRADEOFF_WEIGHTS } from "./tradeoff";
 
 export class AdmissionProbabilityService {
 
@@ -19,9 +20,8 @@ export class AdmissionProbabilityService {
       institute: input.institute,
       probability,
       breakdown: {
-        score: probability * 0.6,
-        academics: probability * 0.25,
-        workEx: probability * 0.15,
+        academics: probability * 0.6,
+        workEx: probability * 0.4,
       },
     };
   }
@@ -39,24 +39,24 @@ export class AdmissionProbabilityService {
     return { probabilities };
   }
 
-  /**
-   * ?? Category-aware non-linear probability
-   */
   private computeProbability(input: AdmissionProbabilityInputV1): number {
-    const baseCurve = INSTITUTE_CURVES[input.institute];
+    const curve = INSTITUTE_CURVES[input.institute];
+    const tradeoff = INSTITUTE_TRADEOFF_WEIGHTS[input.institute];
 
     const cutoff =
-      baseCurve.cutoff + CATEGORY_CUTOFF_SHIFT[input.category];
+      curve.cutoff + CATEGORY_CUTOFF_SHIFT[input.category];
 
     const steepness =
-      baseCurve.steepness * CATEGORY_STEEPNESS_FACTOR[input.category];
+      curve.steepness * CATEGORY_STEEPNESS_FACTOR[input.category];
 
-    let score = input.normalizedScore;
+    const academicScore = input.normalizedScore;
+    const workExScore = Math.min(input.workExMonths, 36) * 1.2;
 
-    // Work-ex contribution (cap)
-    score += Math.min(input.workExMonths, 36) * 0.15;
+    const blendedScore =
+      academicScore * tradeoff.academics +
+      workExScore * tradeoff.workEx;
 
-    const x = score - cutoff;
+    const x = blendedScore - cutoff;
     const probability = 100 / (1 + Math.exp(-steepness * x));
 
     return Math.round(Math.max(0, Math.min(100, probability)));
