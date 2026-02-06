@@ -5,3 +5,4 @@ export * from "./degree";
 export * from "./trend";
 export * from "./vector";
 export * from "./dto";
+export * from "./explain";
