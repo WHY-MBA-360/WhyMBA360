@@ -2,12 +2,14 @@ export type ExamType = "CAT" | "NMAT" | "XAT";
 export type CollegeCode = "IIM_A" | "IIM_B" | "IIM_C";
 export type Category = "GEN" | "OBC" | "SC" | "ST";
 export type AcademicStream = "ENGG" | "NON_ENGG";
+export type DegreeTier = "IIT" | "NIT" | "PRIVATE";
 
 export interface AcademicProfile {
   class10: number;      // 0–100
   class12: number;      // 0–100
   graduation: number;   // 0–100
   stream: AcademicStream;
+  degreeTier: DegreeTier;
 }
 
 export interface AdmissionProbabilityInput {
