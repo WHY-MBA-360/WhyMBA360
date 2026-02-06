@@ -4,7 +4,9 @@ import { AdmissionProbabilityOutput } from "./dto/admission-probability.output";
 import {
   getInstituteCalibration,
   getCategoryCalibration,
+  getCutoffCurve,
 } from "./calibration";
+import { sigmoid } from "./math/sigmoid";
 import { buildExplanation } from "./explain";
 
 @Injectable()
@@ -14,12 +16,17 @@ export class AdmissionProbabilityService {
 
     const institute = getInstituteCalibration(input.institute);
     const category = getCategoryCalibration(input.category);
+    const curve = getCutoffCurve(input.institute);
 
-    const baseScore =
-      (input.score + category.cutoffRelaxation) *
-      institute.academicsWeight;
+    const adjustedScore = input.score + category.cutoffRelaxation;
 
-    const workEx =
+    const baseProbability = sigmoid(
+      adjustedScore,
+      curve.midpoint,
+      curve.steepness
+    );
+
+    const workExBoost =
       (input.workExMonths ?? 0) * institute.workExWeight;
 
     const streamBias =
@@ -34,8 +41,8 @@ export class AdmissionProbabilityService {
        input.academicTrend === "DOWN" ? -4 : 0) * institute.trendBias;
 
     const raw =
-      baseScore +
-      workEx +
+      baseProbability +
+      workExBoost +
       streamBias +
       degreeBias +
       trendBias +
@@ -47,8 +54,9 @@ export class AdmissionProbabilityService {
       institute: input.institute,
       probability,
       explanation: buildExplanation(probability, {
-        baseScore,
-        workEx,
+        adjustedScore,
+        baseProbability,
+        workExBoost,
         streamBias,
         degreeBias,
         trendBias,
