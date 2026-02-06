@@ -7,3 +7,4 @@ export * from "./academics";
 export * from "./degree-tiers";
 export * from "./academic-trend";
 export * from "./institute-bias";
+export * from "./cutoff-curves";

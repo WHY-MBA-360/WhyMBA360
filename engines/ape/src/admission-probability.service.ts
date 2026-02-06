@@ -1,6 +1,7 @@
 import { AdmissionProbabilityInput } from "./dto/admission-probability.input";
 import { AdmissionProbabilityOutput } from "./dto/admission-probability.output";
 import { normalizeAcademics } from "./academics";
+import { applyInstituteCutoffCurve } from "./cutoff-curves";
 import { WEIGHTS } from "./weights";
 
 export class AdmissionProbabilityService {
@@ -12,9 +13,14 @@ export class AdmissionProbabilityService {
       input.institute
     );
 
+    const curvedScore = applyInstituteCutoffCurve(
+      input.institute,
+      input.score / 100
+    );
+
     const composite =
       academicsScore * WEIGHTS.academics +
-      (input.score / 100) * WEIGHTS.score +
+      curvedScore * WEIGHTS.score +
       Math.min(1, input.workExMonths / 36) *
         WEIGHTS.workEx;
 
