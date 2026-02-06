@@ -12,6 +12,7 @@ import {
 import { INSTITUTE_TRADEOFF_WEIGHTS } from "./tradeoff";
 import { STREAM_BIAS } from "./stream";
 import { DEGREE_TIER_BIAS } from "./degree";
+import { ACADEMIC_TREND_BIAS } from "./trend";
 
 export class AdmissionProbabilityService {
 
@@ -64,8 +65,11 @@ export class AdmissionProbabilityService {
     const degreeBias =
       DEGREE_TIER_BIAS[input.degreeTier];
 
+    const trendBias =
+      ACADEMIC_TREND_BIAS[input.academicTrend];
+
     const adjustedScore =
-      blendedScore + streamBias + degreeBias;
+      blendedScore + streamBias + degreeBias + trendBias;
 
     const x = adjustedScore - cutoff;
     const probability = 100 / (1 + Math.exp(-steepness * x));
