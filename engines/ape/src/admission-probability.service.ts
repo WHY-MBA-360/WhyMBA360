@@ -5,6 +5,7 @@ import {
 } from "./dto/admission-probability.input";
 import { CATEGORY_CUTOFFS } from "./cutoffs";
 import { COLLEGE_WEIGHTS } from "./weights";
+import { normalizeAcademics } from "./academics";
 
 @Injectable()
 export class AdmissionProbabilityService {
@@ -20,14 +21,7 @@ export class AdmissionProbabilityService {
       CATEGORY_CUTOFFS[input.college][input.category];
 
     const scoreSignal = this.clamp(normalizedScore / 100);
-
-    const academicsSignal = this.clamp(
-      (input.academics.class10 +
-        input.academics.class12 +
-        input.academics.graduation) /
-        300
-    );
-
+    const academicsSignal = normalizeAcademics(input.academics);
     const workExSignal = this.clamp(
       input.workExMonths / 36
     );
