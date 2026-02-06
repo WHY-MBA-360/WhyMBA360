@@ -4,6 +4,7 @@ import {
   AdmissionProbabilityOutput,
 } from "./dto/admission-probability.input";
 import { CATEGORY_CUTOFFS } from "./cutoffs";
+import { COLLEGE_WEIGHTS } from "./weights";
 
 @Injectable()
 export class AdmissionProbabilityService {
@@ -31,10 +32,12 @@ export class AdmissionProbabilityService {
       input.workExMonths / 36
     );
 
+    const weights = COLLEGE_WEIGHTS[input.college];
+
     const probability =
-      scoreSignal * 0.6 +
-      academicsSignal * 0.25 +
-      workExSignal * 0.15;
+      scoreSignal * weights.score +
+      academicsSignal * weights.academics +
+      workExSignal * weights.workEx;
 
     return {
       probability: Number(probability.toFixed(2)),
