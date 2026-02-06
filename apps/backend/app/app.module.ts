@@ -1,5 +1,5 @@
 import { Module } from "@nestjs/common";
-import { ApeModule } from "./routes/ape/ape.module";
+import { ApeModule } from "./routes/ape.module";
 
 @Module({
   imports: [ApeModule],
