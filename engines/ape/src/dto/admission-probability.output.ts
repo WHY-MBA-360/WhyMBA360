@@ -1,4 +1,5 @@
 export interface AdmissionProbabilityOutput {
-  admitProbability: number; // 0–1
-  band: "Safe" | "Target" | "Stretch";
+  probability: number; // 0–1
+  confidenceBand: "LOW" | "MEDIUM" | "HIGH";
+  explanation: string;
 }
