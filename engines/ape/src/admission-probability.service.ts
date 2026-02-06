@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { AdmissionProbabilityInput } from "./dto/admission-probability.input";
 import { AdmissionProbabilityOutput } from "./dto/admission-probability.output";
-import { calculateProbabilityVector } from "./vector";
+import { explainAllInstitutes } from "./explain";
 
 @Injectable()
 export class AdmissionProbabilityService {
@@ -9,13 +9,12 @@ export class AdmissionProbabilityService {
   calculate(
     input: AdmissionProbabilityInput
   ): AdmissionProbabilityOutput {
-    // EXISTING LOGIC — unchanged
     return {} as any;
   }
 
-  calculateVector(
+  explainVector(
     input: Omit<AdmissionProbabilityInput, "institute">
   ) {
-    return calculateProbabilityVector(input, this);
+    return explainAllInstitutes(input, this);
   }
 }
