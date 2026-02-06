@@ -1,5 +1,6 @@
 import { AcademicProfile } from "./dto/admission-probability.input";
 import { DEGREE_TIER_MULTIPLIER } from "./degree-tiers";
+import { academicTrendMultiplier } from "./academic-trend";
 
 export function normalizeAcademics(
   academics: AcademicProfile
@@ -17,8 +18,15 @@ export function normalizeAcademics(
   const degreeMultiplier =
     DEGREE_TIER_MULTIPLIER[academics.degreeTier];
 
+  // Trend adjustment
+  const trendMultiplier =
+    academicTrendMultiplier(academics);
+
   const adjusted =
-    baseAverage * streamMultiplier * degreeMultiplier;
+    baseAverage *
+    streamMultiplier *
+    degreeMultiplier *
+    trendMultiplier;
 
   // Normalize to 0–1
   return Math.max(0, Math.min(1, adjusted / 100));
