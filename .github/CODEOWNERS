@@ -1,0 +1,15 @@
+# Global
+* @ravindermishra00001-blip
+
+# Apps
+/apps/** @ravindermishra00001-blip
+
+# Engines
+/engines/** @ravindermishra00001-blip
+
+# Infra
+/infra/** @ravindermishra00001-blip
+
+# Governance
+/.github/** @ravindermishra00001-blip
+/docs/** @ravindermishra00001-blip
