@@ -1,9 +1,7 @@
-export interface CalibrationPoint {
-  score: number;          // normalized 0–1
-  admitted: boolean;
-}
-
-export interface InstituteCalibrationData {
-  institute: string;
-  points: CalibrationPoint[];
+export interface CalibrationWeights {
+  academicsWeight: number;
+  workExWeight: number;
+  streamBias: number;
+  degreeBias: number;
+  trendBias: number;
 }
