@@ -9,5 +9,6 @@ export * from "./seat";
 export * from "./category";
 export * from "./cutoff";
 export * from "./institute";
+export * from "./category-institute";
 export * from "./admission-probability.service";
 export * from "./admission-probability.module";
