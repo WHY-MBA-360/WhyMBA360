@@ -1,12 +1,14 @@
-export type CounterfactualAction =
-  | "INCREASE_SCORE"
-  | "ADD_WORK_EX"
-  | "IMPROVE_ACADEMICS"
-  | "CHANGE_TARGET_INSTITUTE";
+export interface CounterfactualOption {
+  factor: string;          // e.g. "CAT score", "Work Experience"
+  currentValue: number;
+  targetValue: number;
+  deltaProbability: number;
+  effortScore: number;     // normalized cost (lower = easier)
+  roi: number;             // deltaProbability / effortScore
+}
 
 export interface CounterfactualResult {
-  action: CounterfactualAction;
-  deltaProbability: number;
-  effortLevel: "LOW" | "MEDIUM" | "HIGH";
-  explanation: string;
+  baselineProbability: number;
+  bestMove: CounterfactualOption;
+  rankedOptions: CounterfactualOption[];
 }
