@@ -10,26 +10,44 @@ export class AdmissionProbabilityService {
   calculate(
     input: AdmissionProbabilityInput
   ): AdmissionProbabilityOutput {
-    const normalized = this.normalize(input.exam, input.rawScore);
+    const normalizedScore = this.normalizeExam(
+      input.exam,
+      input.rawScore
+    );
 
     const cutoff =
       CATEGORY_CUTOFFS[input.college][input.category];
 
-    const delta = normalized - cutoff;
+    const scoreSignal = this.clamp(normalizedScore / 100);
 
-    // Simple deterministic curve
-    const probability = Math.max(
-      0,
-      Math.min(1, 0.5 + delta / 20)
+    const academicsSignal = this.clamp(
+      (input.academics.class10 +
+        input.academics.class12 +
+        input.academics.graduation) /
+        300
     );
+
+    const workExSignal = this.clamp(
+      input.workExMonths / 36
+    );
+
+    const probability =
+      scoreSignal * 0.6 +
+      academicsSignal * 0.25 +
+      workExSignal * 0.15;
 
     return {
       probability: Number(probability.toFixed(2)),
-      meetsCutoff: normalized >= cutoff,
+      meetsCutoff: normalizedScore >= cutoff,
+      breakdown: {
+        score: Number(scoreSignal.toFixed(2)),
+        academics: Number(academicsSignal.toFixed(2)),
+        workEx: Number(workExSignal.toFixed(2)),
+      },
     };
   }
 
-  private normalize(exam: string, raw: number): number {
+  private normalizeExam(exam: string, raw: number): number {
     switch (exam) {
       case "CAT":
         return raw;
@@ -40,5 +58,9 @@ export class AdmissionProbabilityService {
       default:
         return 0;
     }
+  }
+
+  private clamp(value: number): number {
+    return Math.max(0, Math.min(1, value));
   }
 }
