@@ -1,9 +1,7 @@
 import { Module } from "@nestjs/common";
-import { ApeController } from "./routes/ape.controller";
-import { AdmissionProbabilityService } from "../../../engines/ape/src/admission-probability.service";
+import { ApeModule } from "./routes/ape.module";
 
 @Module({
-  controllers: [ApeController],
-  providers: [AdmissionProbabilityService],
+  imports: [ApeModule],
 })
 export class AppModule {}

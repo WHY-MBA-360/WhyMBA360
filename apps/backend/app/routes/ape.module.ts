@@ -1,5 +1,5 @@
 import { Module } from "@nestjs/common";
-import { AdmissionProbabilityModule } from "../../../engines/ape/src";
+import { AdmissionProbabilityModule } from "../../engines/ape";
 import { ApeController } from "./ape.controller";
 
 @Module({
