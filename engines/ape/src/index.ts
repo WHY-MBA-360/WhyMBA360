@@ -1,12 +1,2 @@
-export * from "./admission-probability.module";
-export * from "./admission-probability.service";
-export * from "./dto/admission-probability.input";
-export * from "./dto/admission-probability.output";
-export * from "./weights";
-export * from "./academics";
-export * from "./degree-tiers";
-export * from "./academic-trend";
-export * from "./institute-bias";
-export * from "./cutoff-curves";
-export * from "./workex-curves";
-export * from "./tradeoff";
+export * from "./dto/v1";
+export { AdmissionProbabilityService } from "./admission-probability.service";

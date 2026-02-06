@@ -1,13 +1,13 @@
 import { Injectable } from "@nestjs/common";
-import { AdmissionProbabilityInput } from "./dto/admission-probability.input";
-import { AdmissionProbabilityOutput } from "./dto/admission-probability.output";
+import { AdmissionProbabilityInputV1 } from "./dto/admission-probability.input";
+import { AdmissionProbabilityOutputV1 } from "./dto/admission-probability.output";
 
 type Category = "GEN" | "OBC" | "SC" | "ST";
 type Institute = "IIM_A" | "IIM_B" | "IIM_C";
 
 @Injectable()
 export class AdmissionProbabilityService {
-  calculate(input: AdmissionProbabilityInput): AdmissionProbabilityOutput {
+  calculate(input: AdmissionProbabilityInputV1): AdmissionProbabilityOutputV1 {
     const {
       institute,
       category,
@@ -55,7 +55,7 @@ export class AdmissionProbabilityService {
     return this.clamp(logistic, 0.2, 0.95);
   }
 
-  private academicStrength(a: AdmissionProbabilityInput["academics"]): number {
+  private academicStrength(a: AdmissionProbabilityInputV1["academics"]): number {
     const raw =
       0.3 * a.class10 +
       0.3 * a.class12 +
@@ -125,7 +125,7 @@ export class AdmissionProbabilityService {
     return Math.max(min, Math.min(max, v));
   }
 
-  private zero(inst: Institute, reason: string): AdmissionProbabilityOutput {
+  private zero(inst: Institute, reason: string): AdmissionProbabilityOutputV1 {
     return {
       institute: inst,
       probability: 0,
