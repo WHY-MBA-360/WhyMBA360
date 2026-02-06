@@ -1,0 +1,11 @@
+// CORRECT structure
+import { Module } from '@nestjs/common';
+import { NmatEngineService } from './nmat-engine.service';
+import { NmatEngineController } from './nmat-engine.controller';
+
+@Module({
+  controllers: [NmatEngineController],
+  providers: [NmatEngineService],
+  exports: [NmatEngineService], // Optional
+})
+export class NmatEngineModule {}
