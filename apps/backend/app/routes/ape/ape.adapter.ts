@@ -1,16 +1,19 @@
-import { AdmissionProbabilityService } from "engines/ape";
+import { Injectable } from "@nestjs/common";
+import {
+  AdmissionProbabilityService,
+  AdmissionProbabilityInput,
+  AdmissionProbabilityOutput,
+} from "../../../../engines/ape";
 
-/**
- * Adapter layer:
- * - Bridges backend to APE engine
- * - Depends only on engine public exports
- */
+@Injectable()
 export class ApeAdapter {
   constructor(
     private readonly apeService: AdmissionProbabilityService
   ) {}
 
-  calculate(input: unknown) {
-    return this.apeService.calculate(input as any);
+  calculate(
+    input: AdmissionProbabilityInput
+  ): AdmissionProbabilityOutput {
+    return this.apeService.calculate(input);
   }
 }
