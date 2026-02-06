@@ -5,5 +5,6 @@ export * from "./explainability";
 export * from "./counterfactual";
 export * from "./portfolio";
 export * from "./budget";
+export * from "./seat";
 export * from "./admission-probability.service";
 export * from "./admission-probability.module";
