@@ -3,6 +3,7 @@ import { AdmissionProbabilityOutput } from "./dto/admission-probability.output";
 import { normalizeAcademics } from "./academics";
 import { applyInstituteCutoffCurve } from "./cutoff-curves";
 import { applyWorkExCurve } from "./workex-curves";
+import { getAcademicWorkExWeights } from "./tradeoff";
 import { WEIGHTS } from "./weights";
 
 export class AdmissionProbabilityService {
@@ -24,10 +25,15 @@ export class AdmissionProbabilityService {
       input.workExMonths
     );
 
+    const dynamic = getAcademicWorkExWeights(
+      input.institute,
+      input.workExMonths
+    );
+
     const composite =
-      academicsScore * WEIGHTS.academics +
-      scoreCurve * WEIGHTS.score +
-      workExScore * WEIGHTS.workEx;
+      academicsScore * dynamic.academics +
+      workExScore * dynamic.workEx +
+      scoreCurve * WEIGHTS.score;
 
     return {
       probability: Math.round(
