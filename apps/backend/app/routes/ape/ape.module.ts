@@ -1,7 +1,7 @@
 import { Module } from "@nestjs/common";
-import { AdmissionProbabilityModule } from "../../../../engines/ape";
-import { ApeAdapter } from "./ape.adapter";
 import { ApeController } from "./ape.controller";
+import { ApeAdapter } from "./ape.adapter";
+import { AdmissionProbabilityModule } from "engines/ape";
 
 @Module({
   imports: [AdmissionProbabilityModule],

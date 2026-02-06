@@ -3,17 +3,15 @@ import {
   AdmissionProbabilityService,
   AdmissionProbabilityInput,
   AdmissionProbabilityOutput,
-} from "../../../../engines/ape";
+} from "engines/ape";
 
 @Injectable()
 export class ApeAdapter {
-  constructor(
-    private readonly apeService: AdmissionProbabilityService
-  ) {}
+  constructor(private readonly service: AdmissionProbabilityService) {}
 
   calculate(
     input: AdmissionProbabilityInput
   ): AdmissionProbabilityOutput {
-    return this.apeService.calculate(input);
+    return this.service.calculate(input);
   }
 }
