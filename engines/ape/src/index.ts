@@ -6,5 +6,6 @@ export * from "./counterfactual";
 export * from "./portfolio";
 export * from "./budget";
 export * from "./seat";
+export * from "./category";
 export * from "./admission-probability.service";
 export * from "./admission-probability.module";
