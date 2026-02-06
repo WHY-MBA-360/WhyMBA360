@@ -1,40 +1,44 @@
-import { COLLEGE_CUTOFFS } from "./constants/college-cutoffs";
-import { AdmissionProbabilityInput } from "./dto/admission-probability.input";
-import { AdmissionProbabilityOutput } from "./dto/admission-probability.output";
+import { Injectable } from "@nestjs/common";
+import {
+  AdmissionProbabilityInput,
+  AdmissionProbabilityOutput,
+} from "./dto/admission-probability.input";
+import { CATEGORY_CUTOFFS } from "./cutoffs";
 
+@Injectable()
 export class AdmissionProbabilityService {
-  calculate(input: AdmissionProbabilityInput): AdmissionProbabilityOutput {
-    const { collegeCode, exam, normalizedScore } = input;
+  calculate(
+    input: AdmissionProbabilityInput
+  ): AdmissionProbabilityOutput {
+    const normalized = this.normalize(input.exam, input.rawScore);
 
-    const cutoff = COLLEGE_CUTOFFS[collegeCode]?.[exam];
+    const cutoff =
+      CATEGORY_CUTOFFS[input.college][input.category];
 
-    if (!cutoff) {
-      return {
-        probability: 0,
-        confidenceBand: "LOW",
-        explanation: `${exam} is not accepted by ${collegeCode}.`,
-      };
-    }
+    const delta = normalized - cutoff;
 
-    const D = normalizedScore - cutoff;
-    const k = 0.8;
-
-    let probability = 1 / (1 + Math.exp(-k * D));
-    probability = Math.min(0.98, Math.max(0.02, probability));
-
-    const confidenceBand =
-      probability < 0.25 ? "LOW" :
-      probability < 0.6 ? "MEDIUM" : "HIGH";
-
-    const explanation =
-      D < 0
-        ? `Your ${exam} score is ${Math.abs(D).toFixed(1)} points below the typical cutoff for ${collegeCode}.`
-        : `Your ${exam} score exceeds the usual cutoff for ${collegeCode}.`;
+    // Simple deterministic curve
+    const probability = Math.max(
+      0,
+      Math.min(1, 0.5 + delta / 20)
+    );
 
     return {
       probability: Number(probability.toFixed(2)),
-      confidenceBand,
-      explanation,
+      meetsCutoff: normalized >= cutoff,
     };
+  }
+
+  private normalize(exam: string, raw: number): number {
+    switch (exam) {
+      case "CAT":
+        return raw;
+      case "NMAT":
+        return raw / 3;
+      case "XAT":
+        return raw / 2;
+      default:
+        return 0;
+    }
   }
 }
