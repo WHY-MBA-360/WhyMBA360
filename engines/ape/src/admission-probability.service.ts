@@ -1,18 +1,15 @@
 import { Injectable } from "@nestjs/common";
 import { AdmissionProbabilityInput } from "./dto/admission-probability.input";
 import { AdmissionProbabilityOutput } from "./dto/admission-probability.output";
-import { DEFAULT_CALIBRATION_V1 } from "./calibration";
+import { getInstituteCalibration } from "./calibration";
 import { buildExplanation } from "./explain";
 
 @Injectable()
 export class AdmissionProbabilityService {
 
-  private readonly calibration = DEFAULT_CALIBRATION_V1;
-
   calculate(input: AdmissionProbabilityInput): AdmissionProbabilityOutput {
 
-    const academicScore = input.score;
-    const workExScore = input.workExMonths ?? 0;
+    const calibration = getInstituteCalibration(input.institute);
 
     const streamBias =
       input.stream === "ENGINEER" ? -3 : 2;
@@ -28,11 +25,11 @@ export class AdmissionProbabilityService {
       0;
 
     const factors = {
-      score: academicScore * this.calibration.academicsWeight,
-      workEx: workExScore * this.calibration.workExWeight,
-      stream: streamBias * this.calibration.streamBias,
-      degree: degreeBias * this.calibration.degreeBias,
-      trend: trendBias * this.calibration.trendBias,
+      score: input.score * calibration.academicsWeight,
+      workEx: (input.workExMonths ?? 0) * calibration.workExWeight,
+      stream: streamBias * calibration.streamBias,
+      degree: degreeBias * calibration.degreeBias,
+      trend: trendBias * calibration.trendBias,
     };
 
     const raw =
