@@ -10,6 +10,7 @@ import {
   CATEGORY_STEEPNESS_FACTOR,
 } from "./curves/category";
 import { INSTITUTE_TRADEOFF_WEIGHTS } from "./tradeoff";
+import { STREAM_BIAS } from "./stream";
 
 export class AdmissionProbabilityService {
 
@@ -56,7 +57,12 @@ export class AdmissionProbabilityService {
       academicScore * tradeoff.academics +
       workExScore * tradeoff.workEx;
 
-    const x = blendedScore - cutoff;
+    const streamBias =
+      STREAM_BIAS[input.institute][input.stream];
+
+    const adjustedScore = blendedScore + streamBias;
+
+    const x = adjustedScore - cutoff;
     const probability = 100 / (1 + Math.exp(-steepness * x));
 
     return Math.round(Math.max(0, Math.min(100, probability)));
