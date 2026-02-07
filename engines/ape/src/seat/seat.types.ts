@@ -1,12 +1,12 @@
-export interface InstituteSeatMeta {
+export interface InstituteSeatInfo {
   institute: string;
-  seatCount: number;
+  totalSeats: number;
 }
 
-export interface SeatWeightedROI {
+export interface SeatWeightedScore {
   institute: string;
   probability: number;
-  seatCount: number;
   totalCost: number;
-  weightedRoi: number;
+  totalSeats: number;
+  seatWeightedRoi: number;
 }

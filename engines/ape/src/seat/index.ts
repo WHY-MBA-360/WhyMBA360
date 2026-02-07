@@ -1,2 +1,2 @@
 export * from "./seat.types";
-export * from "./seat-weighted-roi";
+export * from "./seat-weighted-optimizer";
