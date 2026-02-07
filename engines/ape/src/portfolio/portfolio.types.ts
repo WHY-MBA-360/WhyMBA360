@@ -1,17 +1,18 @@
-export type PortfolioBucket = "SAFE" | "STRETCH" | "LOTTERY";
+export type PortfolioBucket = "SAFE" | "TARGET" | "STRETCH";
 
 export interface InstituteProbability {
   institute: string;
+  probability: number; // 0–1
+}
+
+export interface PortfolioRecommendation {
+  institute: string;
   probability: number;
-}
-
-export interface PortfolioEntry extends InstituteProbability {
   bucket: PortfolioBucket;
-  rationale: string;
 }
 
-export interface ApplicationPortfolio {
-  safe: PortfolioEntry[];
-  stretch: PortfolioEntry[];
-  lottery: PortfolioEntry[];
+export interface PortfolioResult {
+  safe: PortfolioRecommendation[];
+  target: PortfolioRecommendation[];
+  stretch: PortfolioRecommendation[];
 }

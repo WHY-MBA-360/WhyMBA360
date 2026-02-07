@@ -1,2 +1,2 @@
 export * from "./portfolio.types";
-export * from "./portfolio.optimizer";
+export * from "./portfolio-optimizer";
