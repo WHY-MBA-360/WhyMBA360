@@ -3,6 +3,7 @@ export * from "./confidence";
 export * from "./ranking";
 export * from "./explainability";
 export * from "./counterfactual";
+export * from "./planner";
 export * from "./portfolio";
 export * from "./budget";
 export * from "./seat";
