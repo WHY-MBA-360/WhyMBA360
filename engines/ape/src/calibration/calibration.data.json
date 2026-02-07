@@ -1,0 +1,16 @@
+{
+  "IIM_A": [
+    { "score": 0.92, "admitted": true },
+    { "score": 0.88, "admitted": false },
+    { "score": 0.96, "admitted": true }
+  ],
+  "IIM_B": [
+    { "score": 0.85, "admitted": true },
+    { "score": 0.80, "admitted": false },
+    { "score": 0.90, "admitted": true }
+  ],
+  "IIM_C": [
+    { "score": 0.83, "admitted": true },
+    { "score": 0.78, "admitted": false }
+  ]
+}
