@@ -7,6 +7,7 @@ export * from "./planner";
 export * from "./portfolio";
 export * from "./budget";
 export * from "./seat";
+export * from "./category-seat";
 export * from "./category";
 export * from "./cutoff";
 export * from "./institute";
